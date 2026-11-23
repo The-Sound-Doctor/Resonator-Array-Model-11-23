@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Resonator-Loaded Tube Laboratory — Live Acoustic Simulator</title>
+<style>
+:root{color-scheme:dark;--bg:#0b101c;--panel:#141e2d;--panel2:#192537;--border:#2b3b51;--text:#e7eff8;--muted:#a5b5ca;--aqua:#57d5dc;--gold:#ffca71;--red:#fb8d9c;--green:#82dfa9;--shadow:0 14px 40px #04091555}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 60% -10%,#172942 0%,#0b101c 50%);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:25px clamp(16px,3vw,45px) 16px;border-bottom:1px solid #223148;background:#0b101c99}h1{font-size:clamp(23px,2.8vw,35px);margin:5px 0 5px;letter-spacing:-.04em}h2{font-size:17px;letter-spacing:-.01em;margin:0 0 11px}h3{font-size:14px;color:#d9e8f8;margin:0 0 7px}p{margin:7px 0;color:var(--muted)}.eyebrow{color:var(--aqua);font-size:11px;letter-spacing:.16em;font-weight:800;text-transform:uppercase}
+.header-row{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.header-right{display:flex;gap:9px;flex-wrap:wrap}.header-note{color:#a9bdd2;max-width:760px}
+button,.file-button{border:1px solid #3e556e;background:#25354a;color:var(--text);font:inherit;font-weight:650;border-radius:9px;padding:9px 12px;cursor:pointer;transition:.12s}
+button:hover,.file-button:hover{border-color:#7bb1cb;background:#304660}button.primary{background:#146a76;border-color:#2aa5b1}button.primary:hover{background:#18858f}button.danger{background:#4b2834;border-color:#8f475a}button:disabled{opacity:.45;cursor:not-allowed}
+.layout{max-width:1700px;margin:auto;padding:18px clamp(12px,2vw,30px) 44px;display:grid;grid-template-columns:minmax(288px,340px) minmax(0,1fr);gap:18px;align-items:start}
+.sidebar{display:flex;flex-direction:column;gap:13px}.panel{background:linear-gradient(140deg,#172336,#111c2c);border:1px solid var(--border);border-radius:15px;padding:17px;box-shadow:var(--shadow)}.sectionline{border-top:1px solid #293b50;margin:14px 0}.inputs{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field{min-width:0;display:flex;flex-direction:column;gap:4px}.field.span{grid-column:1/-1}label,.smallhead{font-size:11px;font-weight:730;letter-spacing:.035em;color:var(--muted)}input,select{width:100%;color:#e9f3ff;background:#0d1727;border:1px solid #3d4c63;border-radius:8px;padding:8px 9px;font:inherit;min-width:0}input:focus,select:focus{outline:2px solid #3ab9c588;outline-offset:1px}input[type=range]{padding:4px 0;border:0;accent-color:var(--aqua);background:transparent;cursor:pointer}input[type=checkbox]{width:auto;accent-color:var(--aqua)}.flex{display:flex;align-items:center;justify-content:space-between;gap:10px}.muted{color:var(--muted)}.tiny{font-size:11px}.value{font-variant-numeric:tabular-nums;color:var(--aqua)}.pill{border-radius:20px;padding:3px 9px;background:#203b4a;color:#a3ebeb;font-size:11px;font-weight:750;display:inline-block}.warn{border:1px solid #8c683f;background:#503a2440;color:#f8d8a0;border-radius:8px;padding:10px;font-size:12px;line-height:1.4;margin-top:12px}.good{color:#93e6bf}.error{color:#f99ba8}.slot{border:1px solid #35475d;background:#101c2b;border-radius:11px;padding:10px;margin:7px 0;cursor:pointer}.slot.active{border-color:#6bc6d0;box-shadow:inset 3px 0 0 #5cd7de}.slothead{display:flex;align-items:center;gap:6px;justify-content:space-between}.slotname{font-weight:750}.slotdesc{font-size:11px;color:#93abc2}.slot-actions{display:flex;gap:6px}.slot button{padding:2px 7px;font-size:11px;line-height:1.4}.tag{font-size:10px;color:#071521;background:#8fd3d9;padding:2px 6px;border-radius:5px;font-weight:800}.tag.qw{background:#eac388}.rowbuttons{display:flex;gap:7px}.rowbuttons button{flex:1;font-size:12px}
+.main{display:flex;flex-direction:column;gap:16px;min-width:0}.title-row{display:flex;align-items:start;justify-content:space-between;gap:10px;flex-wrap:wrap}.schematic{height:auto;width:100%;display:block;touch-action:pan-y;user-select:none;overflow:visible}.sclegend{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;background:var(--aqua)}.dot.gold{background:var(--gold)}.dot.pink{background:var(--red)}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.metric{background:#141f30;border:1px solid #293e55;border-radius:12px;padding:12px}.metric small{font-size:11px;color:#a7bad0}.metric strong{font-size:22px;display:block;margin:3px 0;font-weight:770;font-variant-numeric:tabular-nums}.metric span{color:#7895b1;font-size:10px}
+.graphs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.graphbox{min-width:0}.graphdesc{font-size:12px;color:var(--muted);margin:0}.graph-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}.graph-top h2{margin-bottom:4px}.canvaswrap{position:relative;height:285px;margin-top:6px}.canvaswrap canvas{width:100%;height:100%;display:block;cursor:crosshair}.chart-note{font-size:11px;color:#a5b5ca;margin-top:7px}.footer{font-size:12px;line-height:1.55;color:#b4c4d5}.footer strong{color:#edf5fc}.footer details{margin:10px 0;background:#101927;border:1px solid #31425a;border-radius:9px;padding:11px}summary{cursor:pointer;font-weight:750}.refs{padding-left:20px}.refs li{margin:9px 0}.refs a{color:#91ddf4}.status{font-size:12px;color:#a5c6cf}.checkrow{display:flex;align-items:center;gap:8px}.checkrow input{margin:0}.play-row{display:flex;gap:7px;flex-wrap:wrap}.play-row button{flex:1;font-size:12px}.play-row button.playing{background:#157967;border-color:#7debc7;box-shadow:0 0 0 2px #69d6a650}
+@media(max-width:1100px){.graphs{grid-template-columns:1fr}.canvaswrap{height:270px}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:780px){.layout{display:flex;flex-direction:column}.sidebar{width:100%}.main{width:100%}.metrics{grid-template-columns:repeat(2,1fr)}}@media print{body{background:white;color:black}.sidebar,button{display:none}.layout{display:block}.main{width:100%}}
+</style>
+</head>
+<body>
+<header><div class="header-row"><div><div class="eyebrow">Physics-driven acoustic design · v2.0</div><h1>Resonator-Loaded Tube Laboratory</h1><div class="header-note">An editable 1D impedance tube with side-branch Helmholtz and quarter-wave resonators, explicit populations, movable microphone, and genuinely live A/B listening. Not a homogenized effective-medium metamaterial model.</div></div><div class="header-right"><button id="csv">↓ Export spectra CSV</button><button id="save">↓ Save design</button><label class="file-button">↑ Load design <input type="file" id="load" accept=".json,application/json" style="display:none"/></label><button id="reset">Reset</button></div></div></header>
+<div class="layout">
+<aside class="sidebar">
+<section class="panel"><h2>01 / Tube & medium</h2><div class="inputs">
+<div class="field"><label for="tubeL">Tube length (m)</label><input id="tubeL" type="number" min="0.4" max="5" step="0.05"></div>
+<div class="field"><label for="tubeD">Inner diameter (mm)</label><input id="tubeD" type="number" min="20" max="250" step="5"></div>
+<div class="field"><label for="temp">Air temperature (°C)</label><input id="temp" type="number" min="0" max="45" step="1"></div>
+<div class="field"><label for="fmax">Upper plot frequency (Hz)</label><input id="fmax" type="number" min="250" max="3200" step="50"></div>
+<div class="field span"><label for="outlet">Outlet load</label><select id="outlet"><option value="radiating">Open, radiating (low-ka approximation)</option><option value="matched">Anechoic / impedance-matched</option><option value="rigid">Rigidly closed</option></select></div>
+</div><div id="limits" class="warn"></div></section>
+<section class="panel"><h2>02 / Sound source</h2><div class="inputs">
+<div class="field span"><label for="source">Excitation</label><select id="source"><option value="white">White noise</option><option value="pink">Pink noise</option><option value="sine">Steady sine</option><option value="sweep">Linear sine sweep</option></select></div>
+<div class="field span"><div class="flex"><label for="amp">Source pressure RMS</label><b class="value" id="ampVal"></b></div><input id="amp" type="range" min="0.02" max="2" step="0.02"></div>
+<div class="field span"><label for="sourceZ">Series acoustic source impedance / tube Z₀</label><input id="sourceZ" type="number" min="0.01" max="2" step="0.01"/></div>
+<div class="field"><label for="tone">Sine frequency (Hz)</label><input id="tone" type="number" min="30" max="3200" step="5"></div>
+<div class="field"><label for="duration">Sweep duration (s)</label><input id="duration" type="number" min="1" max="12" step="1"></div>
+<div class="field"><label for="sweepLo">Sweep start (Hz)</label><input id="sweepLo" type="number" min="20" max="3000" step="10"></div><div class="field"><label for="sweepHi">Sweep end (Hz)</label><input id="sweepHi" type="number" min="20" max="3200" step="10"></div>
+</div><div class="sectionline"></div><h3>Live audible monitoring</h3><div class="play-row"><button id="playBase">▶ Listen: empty tube</button><button id="playArray" class="primary">▶ Listen: resonator-loaded</button><button id="stop" class="danger">■ Stop</button></div><p class="tiny">Start either monitor once. Then change source type, amplitude, frequency, resonators or microphone while listening; playback follows the controls automatically. The A/B paths use the same acoustic drive and volume scale.</p><div class="status" id="audioStatus" aria-live="polite">Monitoring off · click either Listen button to start</div><p class="tiny">Listening output is not calibrated to absolute sound-pressure level. Use headphones at a comfortable volume; browser audio needs one initial click.</p></section>
+<section class="panel"><h2>03 / Traverse microphone</h2><div class="flex"><span class="smallhead">Position from source</span><b id="micVal" class="value"></b></div><input type="range" id="mic" min="0" max="1.9" step="0.005"/><p class="tiny">This is the pressure measurement location used in BOTH graphs and live playback. Drag the microphone along the tube or beyond its outlet. Beyond the outlet, the receiver uses an on-axis free-field approximation.</p></section>
+<section class="panel"><div class="flex"><h2 style="margin:0">04 / Resonator population</h2><span class="pill" id="count"></span></div><p class="tiny">Set exactly how many of each type are installed. New side-wall stations are distributed into available spaces; existing positions and dimensions are preserved.</p><div class="inputs" style="margin:10px 0"><div class="field"><label for="countHR">Helmholtz count</label><input id="countHR" type="number" min="0" max="16" step="1"></div><div class="field"><label for="countQW">Quarter-wave count</label><input id="countQW" type="number" min="0" max="16" step="1"></div></div><div class="tiny muted" id="populationNote">Up to 16 cutouts total.</div><div class="sectionline"></div><p class="tiny">Select a station to edit it; toggle it on/off or remove it. Drag its neck in the tube diagram to relocate.</p><div id="slots"></div><div class="rowbuttons"><button id="addHR">+ One Helmholtz</button><button id="addQW">+ One quarter-wave</button></div><div class="sectionline"></div><div id="edit"></div></section>
+</aside>
+<main class="main">
+<section class="panel"><div class="title-row"><div><h2>Impedance tube / longitudinal layout</h2><p class="graphdesc">Port locations and microphone are interactive. Resonators are schematic, not to scale.</p></div><span class="pill">1D plane-wave domain</span></div><svg class="schematic" id="schematic" viewBox="0 0 1120 340" role="img" aria-label="Longitudinal tube diagram with draggable microphone and side-branch resonators"></svg><div class="sclegend"><span><i class="dot"></i>Helmholtz neck + cavity</span><span><i class="dot gold"></i>Quarter-wave closed branch</span><span><i class="dot pink"></i>Movable microphone</span></div></section>
+<div class="metrics"><div class="metric"><small>Plane-wave cut-on</small><strong id="cutoff">—</strong><span>First nonplanar duct mode</span></div><div class="metric"><small>Sound speed</small><strong id="c0">—</strong><span>Temperature adjusted</span></div><div class="metric"><small>At cursor / tone</small><strong id="lookF">—</strong><span>Probe frequency</span></div><div class="metric"><small>Insertion loss</small><strong id="il">—</strong><span>Empty − loaded, dB</span></div></div>
+<section class="panel" style="padding:12px 17px"><div class="flex" style="flex-wrap:wrap"><div><h2 style="margin:0 0 3px">05 / What the graphs measure</h2><p class="graphdesc" id="measurementSummary">Both curves use the movable microphone as their measurement point.</p></div><div class="field" style="min-width:230px"><label for="graphMode">Vertical axis / display mode</label><select id="graphMode"><option value="transfer">Tube frequency response · transfer level (dB)</option><option value="spectrum">Source-driven mic spectrum · dB SPL / 1 Hz</option></select></div></div><p class="tiny" id="graphExplanation" style="margin-top:8px">The continuous response is the ratio of pressure measured at the microphone to a 1 Pa RMS pressure drive, for a separate test tone at each frequency. Changing source type does not change this linear-system transfer function; switch to the driven spectrum to see the source-spectrum effect.</p></section>
+<div class="graphs">
+<section class="panel graphbox"><div class="graph-top"><div><h2>A · Empty tube (reference)</h2><p class="graphdesc" id="baseDesc">Pressure response at microphone; all side branches disconnected</p></div><span class="pill">A / empty</span></div><div class="canvaswrap"><canvas id="chartBase" aria-label="Empty tube simulated spectrum and frequency response"></canvas></div><div class="chart-note" id="baseNote"></div></section>
+<section class="panel graphbox"><div class="graph-top"><div><h2>B · Resonator-loaded tube</h2><p class="graphdesc" id="arrayDesc">Pressure response at microphone; enabled side branches connected</p></div><span class="pill">B / loaded</span></div><div class="canvaswrap"><canvas id="chartArray" aria-label="Resonator-loaded tube simulated spectrum and frequency response"></canvas></div><div class="chart-note" id="arrayNote"></div></section>
+</div>
+<section class="panel"><div class="title-row"><div><h2>Model & interpretation</h2><p class="graphdesc">Research-oriented reduced-order model · no empirical curve-fitting</p></div><span class="pill">Units: SI internally</span></div>
+<p><strong>What is plotted?</strong> Both graphs correspond to pressure at <strong>the current microphone position</strong>, relative to the <strong>same source drive</strong>. Graph A calculates the empty tube with <em>all side branches disconnected</em>. Graph B calculates the same tube with <em>all enabled resonator side branches connected</em>. Choose <strong>Tube frequency response</strong> to plot transfer level 20 log₁₀(|p<sub>mic</sub>/p<sub>drive</sub>|) for a separate 1 Pa RMS test tone at each frequency. Choose <strong>Source-driven mic spectrum</strong> for the predicted actual spectrum from the selected excitation: dB SPL per 1 Hz bin for noise / illustrative sweep occupancy, or a single RMS tone for sine. A linear system's transfer function itself does not depend on whether the drive is white noise, pink noise, or a sine wave. Move your cursor over either chart to compare the two configurations and read their difference.</p>
+<p><strong>Physics:</strong> Tube segments use 2-port acoustic transfer matrices in <i>pressure / volume flow</i> coordinates. Each side branch is a shunt admittance. A Helmholtz branch uses <i>Z = R + jωρL<sub>eff</sub>/S − jρc²/(ωV)</i> with a nominal circular-neck end correction. A quarter-wave branch uses <i>Z<sub>in</sub> = Z<sub>c</sub> coth[(α+jk)L] + Z<sub>entry</sub></i>. Viscothermal boundary-layer losses are estimated using smooth circular passages. The source has adjustable finite acoustic source impedance. The outlet load provides reflections and, for the open case, approximate radiation outside the pipe.</p>
+<p><strong>Shape fidelity:</strong> Straight, J and spiral change the packaging sketch and can use different <em>measured centerline lengths</em>. With equal cross-section, path length and ideal smooth-wall losses, the 1D responses coincide; no arbitrary bend multipliers are introduced. Bend scattering, detailed 3D ports, nonlinear jetting, wall flexure, microphone obstruction, higher modes, and accurate near-field outlet radiation are <strong>not</strong> resolved.</p>
+<details><summary>What does the acoustic solver actually compute?</summary><p>With harmonic convention <i>e<sup>jωt</sup></i>, each tube section of length <i>ℓ</i> has a transfer matrix [[cosh(γℓ), Z<sub>c</sub>sinh(γℓ)], [sinh(γℓ)/Z<sub>c</sub>, cosh(γℓ)]]. Each branch has transfer matrix [[1,0], [1/Z<sub>branch</sub>,1]]. The product relates outlet <i>(p<sub>L</sub>,Q<sub>L</sub>)</i> to inlet <i>(p<sub>0</sub>,Q<sub>0</sub>)</i>, solved with <i>p<sub>L</sub>=Z<sub>L</sub>Q<sub>L</sub></i> and <i>p<sub>drive</sub>=p<sub>0</sub>+Z<sub>source</sub>Q<sub>0</sub></i>. For a blocked outlet, the rigid termination is represented by <i>Q<sub>L</sub>=0</i> to avoid numerical infinities. At in-tube microphone positions the downstream matrix predicts local pressure; outside an open outlet a monopole far-field proxy predicts pressure from <i>Q<sub>L</sub></i>. The loss coefficient for smooth tubes uses the classical high-frequency viscothermal boundary-layer approximation; Helmholtz neck losses interpolate by taking the larger of laminar and boundary-layer resistance. All approximations are flagged in the limits panel.</p></details>
+<details><summary>Sources, validity and physical assumptions</summary><ol class="refs">
+<li><a target="_blank" href="https://doi.org/10.3390/designs6020037">Piana et al. (2022), <i>Silencer Design for the Control of Low Frequency Noise in Ventilation Ducts</i></a> — straight sections, side-branch T matrices, source/load coupling, reference vs installed insertion loss.</li>
+<li><a target="_blank" href="https://doi.org/10.1121/1.1907235">Ingard (1953), <i>On the Theory and Design of Acoustic Resonators</i></a> — cavity neck mass, end corrections, viscous and thermal losses.</li>
+<li><a target="_blank" href="https://doi.org/10.1121/1.400379">Stinson (1991), <i>The propagation of plane sound waves in narrow and wide circular tubes</i></a> — thermoviscous propagation theory.</li>
+<li><a target="_blank" href="https://doi.org/10.1016/j.apacoust.2023.109402">Catapane et al. (2023), <i>Coiled quarter wavelength resonators...</i></a> — comparison of coiled and straight quarter-wave pathways, geometric and dissipative effects.</li>
+<li><a target="_blank" href="https://doi.org/10.1063/5.0031891">Guo et al. (2020), <i>A compact low-frequency sound-absorbing metasurface constructed by resonator with embedded spiral neck</i></a> — long spiral neck Helmholtz devices.</li>
+<li><a target="_blank" href="https://www.iso.org/standard/81294.html">ISO 10534-2:2023</a> — actual impedance-tube practice, plane-wave limits and microphone arrangements (standard, not a paper).</li></ol><p>This simulator uses its own demonstration geometry, not dimensions copied from any one fabricated specimen in those publications. Change dimensions to match the paper or your prototype.</p></details>
+</section>
+<div class="footer">A useful build strategy: design for predicted attenuation first, measure tube transmission with one or two calibrated microphones, estimate neck/bend losses from the measurement, then use FEM/BEM for three-dimensional geometry before fabrication. This software is educational/research prototyping, not a validated measurement instrument. A bank of tuned side branches is not automatically a homogenized effective-medium metamaterial.</div>
+</main>
+</div>
+<script>
+'use strict';
+const RHO20=1.2041, ETA=1.81e-5, PR=0.71, GAMMA_AIR=1.4, PREF=20e-6, TWO=Math.PI*2;
+const $=id=>document.getElementById(id); const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const initial=()=>({tubeL:1.5,tubeD:100,temp:20,fmax:850,outlet:'radiating',source:'white',amp:0.7,sourceZ:0.22,tone:285,duration:6,sweepLo:70,sweepHi:800,mic:1.37,selected:1,seq:4,branches:[
+{id:1,type:'HR',shape:'straight',x:0.43,enabled:true,volume:260,neckL:45,area:1.8,path:36,port:0},
+{id:2,type:'QW',shape:'J',x:0.83,enabled:true,volume:250,neckL:0,area:2.8,path:34,port:0},
+{id:3,type:'HR',shape:'spiral',x:1.14,enabled:true,volume:60,neckL:90,area:2.4,path:40,port:0}
+]});
+let state=initial(),freqs=[],base=[],array=[],plotBase=[],plotArray=[],cursorF=285;
+let graphMode='transfer';
+let audioCtx=null, activeAudio=null, monitorMode=null, audioUpdateTimer=null, audioRequest=0;
+const number=(v,d=2)=>Number(v).toFixed(d);
+function air(){const T=273.15+state.temp;return {c:343.2*Math.sqrt(T/293.15),rho:RHO20*293.15/T,mu:ETA*Math.pow(T/293.15,0.75)};}
+const C=(re=0,im=0)=>({re,im}),add=(a,b)=>C(a.re+b.re,a.im+b.im),sub=(a,b)=>C(a.re-b.re,a.im-b.im),mul=(a,b)=>C(a.re*b.re-a.im*b.im,a.re*b.im+a.im*b.re),scale=(a,s)=>C(a.re*s,a.im*s),abs=a=>Math.hypot(a.re,a.im),div=(a,b)=>{const d=b.re*b.re+b.im*b.im||1e-60;return C((a.re*b.re+a.im*b.im)/d,(a.im*b.re-a.re*b.im)/d)},inv=a=>div(C(1,0),a);
+const sinh=z=>C(Math.sinh(z.re)*Math.cos(z.im),Math.cosh(z.re)*Math.sin(z.im));
+const cosh=z=>C(Math.cosh(z.re)*Math.cos(z.im),Math.sinh(z.re)*Math.sin(z.im));
+const Mat=(a,b,c,d)=>({a,b,c,d}),eye=()=>Mat(C(1),C(),C(),C(1));
+function mm(p,q){return Mat(add(mul(p.a,q.a),mul(p.b,q.c)),add(mul(p.a,q.b),mul(p.b,q.d)),add(mul(p.c,q.a),mul(p.d,q.c)),add(mul(p.c,q.b),mul(p.d,q.d)))}
+function radiationLoad(f,env){const S=Math.PI*Math.pow(state.tubeD/2000,2),a=state.tubeD/2000;const z0=env.rho*env.c/S,k=TWO*f/env.c,ka=k*a; if(state.outlet==='matched')return C(z0);if(state.outlet==='rigid')return null;return C(z0*Math.min(0.5*ka*ka,1.6),z0*0.6133*ka);}
+function lossProp(f,a,env){const w=TWO*f,delta=Math.sqrt(2*env.mu/(env.rho*w)),nu=1+(GAMMA_AIR-1)/Math.sqrt(PR),s=delta/(2*a),k=w/env.c;return C(k*s*nu,k*(1+s*nu));}
+function propagator(f,L,rad,env){if(L<=0)return eye();const S=Math.PI*rad*rad,z0=env.rho*env.c/S,z=scale(lossProp(f,rad,env),L);const sh=sinh(z),ch=cosh(z);return Mat(ch,scale(sh,z0),scale(sh,1/z0),ch);}
+function branchZ(f,b,env){const w=TWO*f,S=b.area*1e-4,a=Math.sqrt(S/Math.PI),delta=Math.sqrt(2*env.mu/(env.rho*w)),k=w/env.c;
+ if(b.type==='HR'){
+  const L=b.neckL/1000,Leff=L+1.46*a,V=b.volume*1e-6;
+  const Rlow=8*env.mu*L/(Math.PI*Math.pow(a,4));
+  const Rbl=(env.rho*w/S)*(delta/a)*(1+(GAMMA_AIR-1)/Math.sqrt(PR))*L;
+  const Rrad=(env.rho*env.c/S)*0.5*Math.pow(k*a,2); // approximate aperture energy loss
+  return C(Math.max(Rlow,Rbl)+Rrad, w*env.rho*Leff/S-env.rho*env.c*env.c/(w*V));
+ }
+ const L=b.path/100, en=b.port/1000;
+ const gamma=lossProp(f,a,env),z0=env.rho*env.c/S,g=scale(gamma,L);
+ let z=scale(div(cosh(g),sinh(g)),z0); // closed end: coth(gamma L)
+ if(en>0){const zConnector=propagator(f,en,a,env);z=div(add(mul(zConnector.a,z),zConnector.b),add(mul(zConnector.c,z),zConnector.d));}
+ const end=0.61*a;
+ const Rex=(env.rho*env.c/S)*0.5*Math.pow(k*a,2);
+ return add(z,C(Rex,w*env.rho*end/S));
+}
+function matrixFrom(f,x,arr,env){const a=state.tubeD/2000;let last=clamp(x,0,state.tubeL),res=eye();if(arr){const ordered=state.branches.filter(b=>b.enabled&&b.x>=last-1e-8).sort((p,q)=>p.x-q.x);for(const b of ordered){res=mm(res,propagator(f,Math.max(0,b.x-last),a,env));res=mm(res,Mat(C(1),C(),inv(branchZ(f,b,env)),C(1)));last=b.x;}}res=mm(res,propagator(f,state.tubeL-last,a,env));return res;}
+function transfer(f,withArray,x=state.mic,env=air()){
+ const M=matrixFrom(f,0,withArray,env),z0=env.rho*env.c/(Math.PI*Math.pow(state.tubeD/2000,2)),Zs=C(z0*state.sourceZ),ZL=radiationLoad(f,env),exitBlocked=ZL===null;
+ let QL,PL;
+ if(exitBlocked){ // outlet pL arbitrary, QL=0. pressure drive = (A+Zs*C)pL
+  const den=add(M.a,mul(Zs,M.c));PL=inv(den);QL=C();
+ } else {const den=add(add(mul(M.a,ZL),M.b),mul(Zs,add(mul(M.c,ZL),M.d)));QL=inv(den);PL=mul(ZL,QL);}
+ if(x<=state.tubeL){const N=matrixFrom(f,Math.max(0,x),withArray,env);return add(mul(N.a,PL),mul(N.b,QL));}
+ if(state.outlet==='rigid')return C();
+ if(state.outlet==='matched'){return C();} // anechoic load absorbs, does not physically radiate
+ const r=Math.max(x-state.tubeL,state.tubeD/2000);
+ const theta=TWO*f*r/env.c,amp=env.rho*TWO*f/(4*Math.PI*r);
+ return mul(mul(C(0,amp),QL),C(Math.cos(theta),-Math.sin(theta)));
+}
+function sourceBin(f){const lo=40,hi=state.fmax,drive=state.amp;
+ if(state.source==='sine')return Math.abs(f-state.tone)<0.45?drive:0;
+ if(state.source==='white')return drive/Math.sqrt(Math.max(1,hi-lo));
+ if(state.source==='pink')return drive/Math.sqrt(Math.max(1e-8,Math.log(hi/lo))*f);
+ const a=Math.min(state.sweepLo,state.sweepHi),b=Math.max(state.sweepLo,state.sweepHi);
+ return f>=a&&f<=b?drive/Math.sqrt(Math.max(1,b-a)):0;
+}
+function spl(p){return 20*Math.log10(Math.max(1e-16,p)/PREF);}
+function updateModel(){const env=air(),N=460,low=40,top=state.fmax;freqs=Array.from({length:N},(_,i)=>low*Math.pow(top/low,i/(N-1)));base=new Array(N);array=new Array(N);plotBase=new Array(N);plotArray=new Array(N);
+ for(let i=0;i<N;i++){let f=freqs[i],p0=abs(transfer(f,false,state.mic,env)),p1=abs(transfer(f,true,state.mic,env)),s=sourceBin(f);base[i]=p0;array[i]=p1;plotBase[i]=s?spl(p0*s):null;plotArray[i]=s?spl(p1*s):null;}
+ drawAll();}
+function paramValid(){state.tubeL=clamp(Number(state.tubeL)||1.5,.4,5);state.tubeD=clamp(Number(state.tubeD)||100,20,250);state.temp=clamp(Number.isFinite(+state.temp)?+state.temp:20,0,45);state.fmax=clamp(Number(state.fmax)||1200,250,3200);state.amp=clamp(Number(state.amp)||0.7,.02,2);state.sourceZ=clamp(Number(state.sourceZ)||.22,.01,2);state.mic=clamp(Number(state.mic)||0,0,state.tubeL+.45);state.tone=clamp(Number(state.tone)||200,30,3200);state.duration=clamp(Number(state.duration)||6,1,12);state.sweepLo=clamp(Number(state.sweepLo)||50,20,3000);state.sweepHi=clamp(Number(state.sweepHi)||1200,20,3200);
+ // Keep resonator objects stable: editor listeners retain references across source/mic changes.
+ state.branches=state.branches.slice(0,16);
+ for(const b of state.branches)Object.assign(b,{x:clamp(+b.x||.1,.05,state.tubeL-.05),volume:clamp(+b.volume||120,1,10000),neckL:clamp(Number.isFinite(+b.neckL)?+b.neckL:0,0,2000),area:clamp(+b.area||1,0.05,30),path:clamp(+b.path||.5,.5,400),port:clamp(Number.isFinite(+b.port)?+b.port:0,0,500),type:b.type==='QW'?'QW':'HR',shape:['straight','J','spiral'].includes(b.shape)?b.shape:'straight',enabled:b.enabled!==false});}
+function updateLimits(){const env=air(),cut=1.84118*env.c/(Math.PI*state.tubeD/1000),ka=Math.PI*state.tubeD/1000*state.fmax/env.c;
+ $('cutoff').textContent=Math.round(cut)+' Hz';$('c0').textContent=number(env.c,1)+' m/s';
+ let messages=[];
+ if(state.fmax>.8*cut)messages.push('Frequency range approaches or exceeds the single-plane-wave limit ('+Math.round(cut)+' Hz). Reduce the upper frequency or tube diameter.');
+ if(state.outlet==='radiating'&&ka>.8)messages.push('Open-end impedance uses a low-ka approximation; upper-band accuracy decreases as ka grows (ka='+number(ka,2)+').');
+ if(state.source==='sine'&&state.tone>state.fmax)messages.push('Sine frequency is outside the plotted range. Raise the frequency limit or lower the tone.');
+ if(state.source==='sweep'&&Math.max(state.sweepLo,state.sweepHi)>state.fmax)messages.push('Part of the sweep is beyond the plotted band.');
+ if(state.mic>state.tubeL){messages.push(state.outlet==='radiating'?'Outside microphone uses a monopole far-field proxy. Within ~1 wavelength of the outlet its near-field accuracy is limited.':'A matched/closed outlet does not radiate into the outside microphone in this model.');}
+ for(let i=0;i<state.branches.length;i++){const b=state.branches[i],ar=state.tubeD/2000,br=Math.sqrt(b.area*1e-4/Math.PI);if(br>ar*.65){messages.push('One or more branch neck radii are large compared with tube radius; point-junction approximation is questionable.');break;}}
+ const bs=state.branches.filter(b=>b.enabled).sort((a,b)=>a.x-b.x);for(let i=1;i<bs.length;i++){if(bs[i].x-bs[i-1].x<state.tubeD/1000*.65){messages.push('Two active cutouts are very close; evanescent junction coupling is neglected.');break;}}
+ $('limits').textContent=messages.length?messages.join(' '):'Within the nominal 1D duct regime. Neck/cavity and outlet models remain approximations; validate against measurements.';
+ $('limits').style.borderColor=messages.length?'#8c683f':'#326e63'; $('ampVal').textContent=number(state.amp,2)+' Pa';
+ $('micVal').textContent=state.mic<=state.tubeL?number(state.mic,3)+' m (inside)':number(state.mic-state.tubeL,3)+' m past outlet';
+ $('count').textContent=state.branches.filter(b=>b.enabled).length+' active / '+state.branches.length+' installed';
+ const tone=state.source==='sine'?state.tone:cursorF;cursorF=clamp(cursorF,40,state.fmax);$('lookF').textContent=Math.round(tone)+' Hz';
+ const il=(f)=>{const x=abs(transfer(f,false)),y=abs(transfer(f,true));return 20*Math.log10(Math.max(x,1e-15)/Math.max(y,1e-15));};
+ $('il').textContent=number(il(clamp(tone,40,state.fmax)),1)+' dB';
+ $('baseNote').textContent=graphMode==='transfer'?'A: 20 log₁₀ |pₘᵢc / pdrive|, dB · no resonator ports.':'A: predicted microphone SPL, same excitation · no resonator ports.';
+ $('arrayNote').textContent=graphMode==='transfer'?'B: 20 log₁₀ |pₘᵢc / pdrive|, dB · enabled ports installed.':'B: predicted microphone SPL · enabled resonator ports installed.';
+ const where=state.mic<=state.tubeL?number(state.mic,3)+' m from source (inside)':' '+number(state.mic-state.tubeL,3)+' m beyond outlet';
+ $('measurementSummary').textContent='Measurement: microphone at '+where+' · same source impedance and outlet load in A and B.';
+ $('graphExplanation').textContent=graphMode==='transfer'?'Both solid traces are transfer functions (dB re pressure ratio), independent of excitation type and amplitude. To see white noise, pink noise, a tone, or a sweep, switch the display to Source-driven mic spectrum.':'Both solid traces are predicted microphone sound-pressure spectra for the selected source. White/pink noise are per 1 Hz bin, a sine is a single RMS tone, and a sweep displays approximate frequency occupancy (not a real-time FFT).';
+}
+function drawChart(canvas,values,transferValues,color){
+ const rect=canvas.getBoundingClientRect(),w=Math.max(200,rect.width),h=Math.max(160,rect.height),dpr=Math.min(2,devicePixelRatio||1);
+ canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
+ const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+ const left=56,top=16,right=17,bottom=38,cw=w-left-right,ch=h-top-bottom;
+ const f2db=arr=>arr.map(p=>20*Math.log10(Math.max(p,1e-15)));
+ const valuesBase=graphMode==='transfer'?f2db(base):plotBase;
+ const valuesLoaded=graphMode==='transfer'?f2db(array):plotArray;
+ const possible=[...valuesBase,...valuesLoaded].filter(v=>v!==null&&Number.isFinite(v));
+ if(state.source==='sine'&&graphMode==='spectrum'&&state.tone>=40&&state.tone<=state.fmax){
+   possible.push(spl(abs(transfer(state.tone,false))*state.amp),spl(abs(transfer(state.tone,true))*state.amp));
+ }
+ let low=Math.floor((Math.min(...possible,-30)-9)/10)*10;
+ let high=Math.ceil((Math.max(...possible,10)+9)/10)*10;
+ low=clamp(low,-150,140);high=clamp(high,low+30,190);if(high-low<45)high=low+45;
+ const fx=f=>left+cw*Math.log(f/40)/Math.log(state.fmax/40),fy=v=>top+ch*(high-v)/(high-low);
+ ctx.fillStyle='#0d1625';ctx.fillRect(left,top,cw,ch);ctx.font='11px system-ui,Arial';ctx.textAlign='right';ctx.textBaseline='middle';
+ for(let i=0;i<=5;i++){const v=low+(high-low)*i/5,y=fy(v);ctx.strokeStyle='#293951';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();ctx.fillStyle='#9ab0c4';ctx.fillText(Math.round(v),left-7,y);}
+ const xTicks=[40,60,80,100,150,200,300,500,700,1000,1500,2000,3000];ctx.textAlign='center';ctx.textBaseline='top';let lastTick=-100;
+ for(const f of xTicks){if(f>state.fmax+.1)continue;const x=fx(f);ctx.strokeStyle='#25354a';ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,top+ch);ctx.stroke();if(x-lastTick>30){ctx.fillStyle='#9ab0c4';ctx.fillText(f>=1000?(f/1000).toFixed(f%1000?1:0)+'k':String(f),x,top+ch+6);lastTick=x;}}
+ ctx.fillStyle='#c0cde0';ctx.textAlign='left';ctx.fillText(graphMode==='transfer'?'20 log₁₀ |pₘᵢc / pdrive| (dB)':'Mic SPL (dB re 20 µPa)',left+5,top+4);ctx.textAlign='right';ctx.fillText('Frequency (Hz)',w-right,h-14);
+ const vals=graphMode==='transfer'?f2db(transferValues):values;
+ ctx.save();ctx.lineWidth=2.4;ctx.strokeStyle=color;ctx.beginPath();let started=false;
+ if(!(state.source==='sine'&&graphMode==='spectrum'))for(let i=0;i<freqs.length;i++){
+  const v=vals[i];if(v===null||!Number.isFinite(v)){started=false;continue;}
+  const x=fx(freqs[i]),y=clamp(fy(v),top,top+ch);
+  if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
+ }
+ ctx.stroke();ctx.restore();
+ if(state.source==='sine'&&graphMode==='spectrum'){
+  const f=state.tone;if(f>=40&&f<=state.fmax){const v=spl(abs(transfer(f,canvas.id==='chartArray'))*state.amp),x=fx(f),y=clamp(fy(v),top,top+ch);
+  ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,top+ch);ctx.lineTo(x,y);ctx.stroke();ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,5,0,TWO);ctx.fill();}
+ }
+ if(state.source==='sweep'&&graphMode==='spectrum'){ctx.fillStyle='#d9bfd1';ctx.font='11px system-ui';ctx.textAlign='left';ctx.fillText('Sweep: '+state.sweepLo+'–'+state.sweepHi+' Hz (occupancy)',left+7,top+22);}
+ if(cursorF>=40&&cursorF<=state.fmax){const x=fx(cursorF);ctx.strokeStyle='#dce8f277';ctx.lineWidth=1;ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,top+ch);ctx.stroke();ctx.setLineDash([]);}
+ canvas._plot={fx,low,high,left,cw};
+}
+function updateStats(){updateLimits();}
+function drawAll(){updateStats();renderSchematic();drawChart($('chartBase'),plotBase,base,'#5bd5e6');drawChart($('chartArray'),plotArray,array,'#ffca71');}
+function shapeBranch(b,x,n){const selected=b.id===state.selected,co=b.type==='HR'?'#59d4de':'#ffca71',sc=selected?1.4:1,op=b.enabled?1:.28;
+ const stemY=168, bottomY=270;let paths='';
+ if(b.type==='HR'){
+ if(b.shape==='straight')paths=`<path d="M ${x} ${stemY} V 233"/><rect x="${x-31}" y="233" width="62" height="53" rx="20" fill="${co}22"/>`;
+ else if(b.shape==='J')paths=`<path d="M ${x} ${stemY} V 205 Q ${x} 222 ${x+20} 222 H ${x+39} Q ${x+54} 222 ${x+54} 238 V 246"/><rect x="${x+25}" y="246" width="58" height="38" rx="16" fill="${co}22"/>`;
+ else{let d=`M ${x} ${stemY} L ${x} 190`;for(let j=0;j<=38;j++){const t=j/38*Math.PI*4.1,r=7+j/38*26;const xx=x+r*Math.cos(t),yy=226+r*Math.sin(t);d+=` L ${xx.toFixed(1)} ${yy.toFixed(1)}`;}paths=`<path d="${d}"/><rect x="${x-29}" y="269" width="58" height="35" rx="13" fill="${co}22"/>`;}
+ } else {
+ if(b.shape==='straight')paths=`<path d="M ${x} ${stemY} V ${bottomY} M ${x-12} ${bottomY} H ${x+12}"/>`;
+ else if(b.shape==='J')paths=`<path d="M ${x} ${stemY} V 240 Q ${x} 262 ${x+22} 262 H ${x+48} V 210 M ${x+36} 210 H ${x+60}"/>`;
+ else{let d=`M ${x} ${stemY} L ${x} 192`;for(let j=0;j<=52;j++){let t=j/52*Math.PI*5.6,r=5+25*j/52;d+=` L ${(x+r*Math.cos(t)).toFixed(1)} ${(231+r*Math.sin(t)).toFixed(1)}`;}paths=`<path d="${d}"/>`;}
+ }
+ return `<g class="branch" data-id="${b.id}" opacity="${op}" style="cursor:grab" stroke="${co}" stroke-width="${selected?5:4}" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="${x-7}" y="153" width="14" height="15" fill="${co}" stroke="none" rx="3"/>${paths}<circle cx="${x}" cy="${stemY}" r="11" stroke="${selected?'#fff':'transparent'}" fill="${co}" fill-opacity=".2"/><text x="${x}" y="${b.type==='HR'&&b.shape==='spiral'?325:320}" fill="#dfeaf5" font-size="14" stroke="none" text-anchor="middle" font-weight="700">${b.type==='HR'?'H':'Q'}${n+1}</text></g>`;
+}
+let drag=null;
+function renderSchematic(){const s=$('schematic'),x0=145,x1=955,y0=91,y1=166;
+ const px=x=>x0+clamp(x,0,state.tubeL)/state.tubeL*(x1-x0),mx=state.mic<=state.tubeL?px(state.mic):x1+(state.mic-state.tubeL)/.45*120;
+ let h=`<defs><linearGradient id="tubeg" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#26435b"/><stop offset=".48" stop-color="#14243a"/><stop offset="1" stop-color="#253c57"/></linearGradient><marker id="ar" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#65869b"/></marker></defs>
+ <g font-family="system-ui,Arial" fill="none"><path d="M50 107 L83 93 L83 164 L50 150 Z" fill="#268aa3" stroke="#78e4f0" stroke-width="3"/><rect x="32" y="108" width="20" height="41" rx="5" fill="#24546c" stroke="#6dd2db" stroke-width="3"/><path d="M95 108 Q117 128 95 149 M106 100 Q139 128 106 155" stroke="#57d8e0" stroke-width="3"/><text x="64" y="61" font-size="17" fill="#c7e5ef" text-anchor="middle">SOURCE</text>
+ <rect x="${x0}" y="${y0}" width="${x1-x0}" height="${y1-y0}" rx="5" fill="url(#tubeg)" stroke="#55758a" stroke-width="3"/><path d="M${x0+8} ${y0+13} H${x1-8} M${x0+8} ${y1-12}H${x1-8}" stroke="#6184a2" stroke-opacity=".2"/><line x1="${x0}" y1="${(y0+y1)/2}" x2="${x1}" y2="${(y0+y1)/2}" stroke="#70bdd1" stroke-dasharray="9 12" stroke-width="1.5" opacity=".5"/>
+ <path d="M${x1} ${y0-7}V${y1+8}" stroke="#a5b8ca" stroke-width="4"/><path d="M${x1+3} 110L${x1+23} 113M${x1+3} 146L${x1+23} 143" stroke="#bbd9ea" stroke-width="2"/>
+ <text x="${(x0+x1)/2}" y="76" text-anchor="middle" fill="#b7ccdf" font-size="15">${number(state.tubeL,2)} m · ${number(state.tubeD,0)} mm I.D.</text>
+ <text x="${x0}" y="188" fill="#7794a8" font-size="12" text-anchor="start">0 m</text><text x="${x1}" y="188" fill="#7794a8" font-size="12" text-anchor="end">${number(state.tubeL,2)} m</text></g>`;
+ state.branches.forEach((b,i)=>h+=shapeBranch(b,px(b.x),i));
+ h+=`<g id="draggableMic" style="cursor:ew-resize" fill="none" stroke="#ff93a4" stroke-width="4"><line x1="${mx}" y1="5" x2="${mx}" y2="110" stroke-dasharray="4 5"/><rect x="${mx-12}" y="21" width="24" height="48" rx="10" fill="#4c2539" stroke="#ff9baf"/><rect x="${mx-8}" y="54" width="16" height="32" rx="3" fill="#bc536e" stroke="#ff9baf"/><circle cx="${mx}" cy="92" r="7" fill="#fff0f1" stroke="#ff93a4"/><rect x="${mx-24}" y="0" width="48" height="115" stroke="none" fill="transparent"/></g><text x="${mx}" y="16" text-anchor="middle" font-size="13" fill="#ffd3da">MIC</text>
+ <text x="1030" y="194" text-anchor="middle" font-size="12" fill="#b3c8da">Outside</text>`;
+ s.innerHTML=h;
+ // Drags use top SVG coordinate x, avoiding canvas coordinate errors on scaled displays.
+ function coord(e){const pt=s.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;let transform=s.getScreenCTM();return transform?pt.matrixTransform(transform.inverse()).x:x0;}
+ function posFromX(x){return x<=x1?clamp((x-x0)/(x1-x0)*state.tubeL,0,state.tubeL):state.tubeL+clamp((x-x1)/120*.45,0,.45);}
+ s.querySelector('#draggableMic').addEventListener('pointerdown',e=>{drag={kind:'mic'};s.setPointerCapture(e.pointerId);e.preventDefault();});
+ s.querySelectorAll('.branch').forEach(el=>el.addEventListener('pointerdown',e=>{const id=Number(el.getAttribute('data-id'));state.selected=id;drag={kind:'branch',id};s.setPointerCapture(e.pointerId);e.preventDefault();renderSlots();renderEditor();renderSchematic();}));
+ s.onpointermove=e=>{if(!drag)return;const x=coord(e);if(drag.kind==='mic'){state.mic=posFromX(x);$('mic').value=state.mic;}else{const b=state.branches.find(b=>b.id===drag.id);if(b)b.x=clamp(posFromX(Math.min(x,x1)),.05,state.tubeL-.05);}renderSchematic();updateModel();queueAudioUpdate();if(drag.kind==='branch'){renderSlots();const pos=$('editX');if(pos)pos.value=state.branches.find(b=>b.id===drag.id).x.toFixed(3);}};
+ s.onpointerup=s.onpointercancel=()=>{drag=null;};
+}
+function renderSlots(){
+ $('countHR').value=state.branches.filter(b=>b.type==='HR').length;
+ $('countQW').value=state.branches.filter(b=>b.type==='QW').length;
+ $('populationNote').textContent='Installed: '+state.branches.length+' / 16 total · inactive stations still count.';
+ const root=$('slots');root.innerHTML='';state.branches.forEach((b,i)=>{const div=document.createElement('div');div.className='slot'+(state.selected===b.id?' active':'');div.innerHTML=`<div class="slothead"><span class="tag ${b.type==='QW'?'qw':''}">${b.type==='HR'?'HR':'QW'}</span><span class="slotname">${i+1} · ${b.shape==='straight'?'Straight':b.shape==='spiral'?'Spiral':'J-fold'}</span><div class="slot-actions"><button type="button" class="toggle" title="Enable / disable">${b.enabled?'On':'Off'}</button><button type="button" class="remove" title="Remove resonator">×</button></div></div><div class="slotdesc">x ${number(b.x,3)} m · ${b.type==='HR'?number(helmF(b),0)+' Hz estimate':number(qwF(b),0)+' Hz estimate'}</div>`;
+ div.addEventListener('click',e=>{if(e.target.closest('.toggle')){b.enabled=!b.enabled;renderSlots();updateModel();queueAudioUpdate();return;}if(e.target.closest('.remove')){state.branches=state.branches.filter(p=>p.id!==b.id);if(state.selected===b.id)state.selected=state.branches[0]?.id??null;renderSlots();renderEditor();updateModel();queueAudioUpdate();return;}state.selected=b.id;renderSlots();renderEditor();renderSchematic();});root.appendChild(div);});}
+function helmF(b){const env=air(),a=Math.sqrt(b.area*1e-4/Math.PI);return env.c/TWO*Math.sqrt(b.area*1e-4/(b.volume*1e-6*(b.neckL/1000+1.46*a)));}
+function qwF(b){const env=air(),a=Math.sqrt(b.area*1e-4/Math.PI);return env.c/(4*(b.path/100+b.port/1000+0.61*a));}
+function renderEditor(){const b=state.branches.find(p=>p.id===state.selected),root=$('edit');if(!b){root.innerHTML='<p class="tiny">Add a resonator to begin editing.</p>';return;}
+ root.innerHTML=`<h3>Selected resonator · ${b.type==='HR'?'Helmholtz':'Quarter-wave'}</h3><div class="inputs">
+ <div class="field"><label for="editType">Resonator family</label><select id="editType"><option value="HR">Helmholtz</option><option value="QW">Quarter-wave</option></select></div>
+ <div class="field"><label for="editShape">Path geometry</label><select id="editShape"><option value="straight">Straight</option><option value="J">J / folded</option><option value="spiral">Spiral / coiled</option></select></div>
+ <div class="field span"><label for="editX">Port location (m)</label><input id="editX" type="number" min="0.05" max="${state.tubeL-.05}" step="0.01" value="${b.x}"></div>
+ ${b.type==='HR'?`<div class="field"><label for="editVolume">Cavity volume (cm³)</label><input id="editVolume" type="number" min="1" max="10000" step="5" value="${b.volume}"></div><div class="field"><label for="editNeck">Neck path (mm)</label><input id="editNeck" type="number" min="0" max="2000" step="5" value="${b.neckL}"></div>`:`<div class="field"><label for="editPath">Closed channel path (cm)</label><input id="editPath" type="number" min="0.5" max="400" step="1" value="${b.path}"></div><div class="field"><label for="editPort">Entrance connector (mm)</label><input id="editPort" type="number" min="0" max="500" step="5" value="${b.port}"></div>`}
+ <div class="field span"><label for="editArea">${b.type==='HR'?'Neck':'Channel'} area (cm²)</label><input id="editArea" type="number" min="0.05" max="30" step="0.1" value="${b.area}"></div></div>
+ <p class="tiny">Estimated isolated resonance: <strong class="good">${Math.round(b.type==='HR'?helmF(b):qwF(b))} Hz</strong> (lossless centerline estimate). Acoustic coupling shifts minima. Shape alone does not modify the 1D transfer function.</p>`;
+ $('editType').value=b.type;$('editShape').value=b.shape;
+ [['editType','type'],['editShape','shape'],['editX','x'],['editVolume','volume'],['editNeck','neckL'],['editPath','path'],['editPort','port'],['editArea','area']].forEach(([id,key])=>{const el=$(id);if(!el)return;el.addEventListener('change',()=>{b[key]=key==='type'||key==='shape'?el.value:Number(el.value);paramValid();renderSlots();renderEditor();updateModel();queueAudioUpdate();});});
+}
+function bindControls(){
+ const ids=['tubeL','tubeD','temp','fmax','outlet','source','amp','sourceZ','tone','duration','sweepLo','sweepHi','mic'];
+ for(const id of ids){const el=$(id);el.value=state[id];
+  el.addEventListener(id==='mic'||id==='amp'?'input':'change',()=>{
+   state[id]=['outlet','source'].includes(id)?el.value:Number(el.value);
+   paramValid();
+   if(['tubeL','tubeD'].includes(id)){renderSlots();renderEditor();}
+   if(id==='source')toggleInputs();
+   if(id==='mic')$('mic').max=state.tubeL+.45;
+   updateModel();
+   if(id==='amp'){adjustLiveAmplitude();}else queueAudioUpdate();
+  });
+ }
+ $('graphMode').addEventListener('change',e=>{graphMode=e.target.value;drawAll();});
+ for(const type of ['HR','QW'])$('count'+type).addEventListener('change',e=>{setCount(type,Number(e.target.value));});
+ $('mic').max=state.tubeL+.45;toggleInputs();
+ $('addHR').onclick=()=>addRes('HR');$('addQW').onclick=()=>addRes('QW');
+ $('reset').onclick=()=>{stopAudio();state=initial();graphMode='transfer';$('graphMode').value=graphMode;cursorF=state.tone;refresh();};
+ $('csv').onclick=exportCSV;$('save').onclick=()=>download('resonator_loaded_tube_design.json',JSON.stringify({...state,graphMode,format:'ResonatorLoadedTubeLab-v2'},null,2),'application/json');
+ $('load').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const val=JSON.parse(await file.text());if(!Array.isArray(val.branches)||!Number.isFinite(+val.tubeL))throw Error('Invalid configuration');stopAudio();state={...initial(),...val};graphMode=val.graphMode==='spectrum'?'spectrum':'transfer';$('graphMode').value=graphMode;paramValid();refresh();$('audioStatus').textContent='Design loaded · monitoring off.';}catch(err){alert('Could not load configuration: '+err.message);}e.target.value='';});
+ $('playBase').onclick=()=>play(false);$('playArray').onclick=()=>play(true);$('stop').onclick=stopAudio;
+ for(const id of ['chartBase','chartArray'])$(id).addEventListener('pointermove',e=>{const rect=e.currentTarget.getBoundingClientRect(),x=e.clientX-rect.left,pl=e.currentTarget._plot;if(!pl)return;cursorF=clamp(40*Math.pow(state.fmax/40,(x-pl.left)/pl.cw),40,state.fmax);drawAll();});
+ window.addEventListener('resize',()=>{if(base.length)drawAll()});
+}
+function toggleInputs(){for(const id of ['tone','sweepLo','sweepHi','duration'])$(id).disabled=id==='tone'?state.source!=='sine':state.source!=='sweep';}
+function refresh(){paramValid();for(const id of ['tubeL','tubeD','temp','fmax','outlet','source','amp','sourceZ','tone','duration','sweepLo','sweepHi','mic'])$(id).value=state[id];$('mic').max=state.tubeL+.45;toggleInputs();renderSlots();renderEditor();updateModel();}
+function freshRes(type){
+ const n=state.branches.length;
+ // Choose midpoint of the largest available longitudinal gap, preserving every existing station.
+ const sorted=[.05,...state.branches.map(b=>b.x).sort((a,b)=>a-b),state.tubeL-.05];
+ let gap=-1,pos=state.tubeL/2;
+ for(let i=1;i<sorted.length;i++)if(sorted[i]-sorted[i-1]>gap){gap=sorted[i]-sorted[i-1];pos=(sorted[i]+sorted[i-1])/2;}
+ return {id:state.seq++,type,shape:'straight',x:clamp(pos,.05,state.tubeL-.05),enabled:true,volume:170,neckL:50,area:2,path:38,port:0};
+}
+function setCount(type,wanted){
+ if(!Number.isFinite(wanted)||!Number.isInteger(wanted)||wanted<0||wanted>16){alert('Enter a whole number between 0 and 16.');renderSlots();return;}
+ const existing=state.branches.filter(b=>b.type===type).length;
+ if(wanted+state.branches.filter(b=>b.type!==type).length>16){alert('No more than 16 resonator stations in total. Reduce the other type first.');renderSlots();return;}
+ if(wanted>existing)for(let i=existing;i<wanted;i++)state.branches.push(freshRes(type));
+ if(wanted<existing){let remove=existing-wanted;for(let i=state.branches.length-1;i>=0&&remove>0;i--){if(state.branches[i].type===type){state.branches.splice(i,1);remove--;}}}
+ if(!state.branches.some(b=>b.id===state.selected))state.selected=state.branches[0]?.id??null;
+ else if(wanted>existing)state.selected=state.branches[state.branches.length-1].id;
+ renderSlots();renderEditor();updateModel();queueAudioUpdate();
+}
+function addRes(type){if(state.branches.length>=16){alert('Limit: 16 total resonator side-wall cutouts.');return;}
+ const b=freshRes(type);state.branches.push(b);state.selected=b.id;renderSlots();renderEditor();updateModel();queueAudioUpdate();}
+function download(name,data,mime){const blob=new Blob([data],{type:mime}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);}
+function exportCSV(){let lines=['frequency_Hz,empty_tube_pressure_transfer_magnitude,resonator_loaded_pressure_transfer_magnitude,empty_tube_transfer_dB,resonator_loaded_transfer_dB,empty_tube_source_driven_mic_SPL_dB,loaded_tube_source_driven_mic_SPL_dB,insertion_loss_dB'];freqs.forEach((f,i)=>lines.push([f.toFixed(4),base[i].toExponential(7),array[i].toExponential(7),(20*Math.log10(Math.max(base[i],1e-15))).toFixed(5),(20*Math.log10(Math.max(array[i],1e-15))).toFixed(5),plotBase[i]===null?'':plotBase[i].toFixed(5),plotArray[i]===null?'':plotArray[i].toFixed(5),(20*Math.log10(Math.max(base[i],1e-15)/Math.max(array[i],1e-15))).toFixed(5)].join(',')));download('resonator_loaded_tube_spectra.csv',lines.join('\n'),'text/csv');}
+function updateAudioButtons(){
+ $('playBase').classList.toggle('playing',monitorMode===false);
+ $('playArray').classList.toggle('playing',monitorMode===true);
+}
+function stopAudio(){
+ ++audioRequest;clearTimeout(audioUpdateTimer);monitorMode=null;
+ if(activeAudio){const old=activeAudio;activeAudio=null;
+  try{old.fade.gain.setTargetAtTime(0,audioCtx.currentTime,.025);setTimeout(()=>{try{old.node.stop();old.node.disconnect();old.filter.disconnect();old.fade.disconnect();old.sourceGain.disconnect();old.speaker.disconnect();}catch(e){}},140);}catch(e){}
+ }
+ updateAudioButtons();$('audioStatus').textContent='Monitoring off · click either Listen button to start';
+}
+function adjustLiveAmplitude(){
+ if(activeAudio&&audioCtx){activeAudio.sourceGain.gain.setTargetAtTime(state.amp*activeAudio.sourceScale,audioCtx.currentTime,.02);
+ $('audioStatus').textContent='LIVE · '+(monitorMode?'loaded tube':'empty tube')+' · '+state.source+' · '+number(state.amp,2)+' Pa RMS';}
+}
+function queueAudioUpdate(){
+ if(monitorMode===null)return;
+ clearTimeout(audioUpdateTimer);
+ $('audioStatus').textContent='LIVE · updating model…';
+ audioUpdateTimer=setTimeout(()=>{if(monitorMode!==null)play(monitorMode);},170);
+}
+// Radix-2 inverse FFT (Hermitian spectrum -> real audio), no libraries/network required.
+function inverseFFT(real,imag){const n=real.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){[real[i],real[j]]=[real[j],real[i]];[imag[i],imag[j]]=[imag[j],imag[i]];}}
+ for(let len=2;len<=n;len<<=1){const ang=TWO/len,wr0=Math.cos(ang),wi0=Math.sin(ang);for(let i=0;i<n;i+=len){let wr=1,wi=0;for(let j=0;j<len/2;j++){const u=i+j,v=i+j+len/2,tr=real[v]*wr-imag[v]*wi,ti=real[v]*wi+imag[v]*wr;real[v]=real[u]-tr;imag[v]=imag[u]-ti;real[u]+=tr;imag[u]+=ti;const tmp=wr*wr0-wi*wi0;wi=wr*wi0+wi*wr0;wr=tmp;}}}for(let i=0;i<n;i++)real[i]/=n;}
+// Browser uses convolution of a computed time-domain impulse response with a continuous excitation.
+// IR is inverse-FFT of the physically modeled complex transfer function, keeping reflection phase.
+function impulseResponse(ctx,loaded){
+ const fs=ctx.sampleRate,n=65536,real=new Float64Array(n),imag=new Float64Array(n),env=air();
+ const audioLimit=Math.min(6200,Math.max(1100,state.fmax,state.tone,state.sweepLo,state.sweepHi)+900);
+ const fadeStart=audioLimit-650, df=fs/n;
+ for(let k=1;k<n/2;k++){
+  const f=k*df;if(f>=audioLimit)break;
+  const H=transfer(f,loaded,state.mic,env);
+  const fadeHigh=f<=fadeStart?1:.5+.5*Math.cos(Math.PI*(f-fadeStart)/(audioLimit-fadeStart));
+  const fadeLow=f>=28?1:Math.pow(f/28,2);
+  const r=H.re*fadeHigh*fadeLow,im=H.im*fadeHigh*fadeLow;
+  real[k]=r;imag[k]=im;real[n-k]=r;imag[n-k]=-im;
+ }
+ inverseFFT(real,imag);
+ const b=ctx.createBuffer(1,n,fs),data=b.getChannelData(0);
+ for(let i=0;i<n;i++)data[i]=real[i];
+ return b;
+}
+function periodicNoise(ctx,kind){
+ const fs=ctx.sampleRate,n=65536,df=fs/n,r=new Float64Array(n),im=new Float64Array(n);
+ const high=Math.min(state.fmax,0.44*fs);
+ for(let k=1;k<n/2;k++){
+  const f=k*df;if(f<40||f>high)continue;
+  const amp=kind==='pink'?1/Math.sqrt(f):1,angle=Math.random()*TWO;
+  r[k]=amp*Math.cos(angle);im[k]=amp*Math.sin(angle);r[n-k]=r[k];im[n-k]=-im[k];
+ }
+ inverseFFT(r,im);
+ let rms=0;for(let i=0;i<n;i++)rms+=r[i]*r[i];rms=Math.sqrt(rms/n)||1;
+ const b=ctx.createBuffer(1,n,fs),ch=b.getChannelData(0);
+ for(let i=0;i<n;i++)ch[i]=r[i]/rms;
+ return b;
+}
+function sweepBuffer(ctx){
+ const fs=ctx.sampleRate,dur=state.duration,n=Math.floor(fs*dur),b=ctx.createBuffer(1,n,fs),v=b.getChannelData(0);
+ const f0=state.sweepLo,f1=state.sweepHi,rate=(f1-f0)/dur,edge=Math.min(.03,dur/20);
+ for(let i=0;i<n;i++){
+  const t=i/fs,env=Math.min(1,t/edge,(dur-t)/edge);
+  v[i]=Math.sin(TWO*(f0*t+.5*rate*t*t))*Math.max(0,env);
+ }
+ return b;
+}
+function buildAudio(ctx,loaded){
+ const node=(state.source==='sine'?ctx.createOscillator():ctx.createBufferSource());
+ let scaleSource=1;
+ if(state.source==='sine'){node.type='sine';node.frequency.value=state.tone;scaleSource=Math.SQRT2;}
+ else if(state.source==='sweep'){node.buffer=sweepBuffer(ctx);node.loop=true;scaleSource=Math.SQRT2;}
+ else{node.buffer=periodicNoise(ctx,state.source);node.loop=true;}
+ const sourceGain=ctx.createGain();sourceGain.gain.value=state.amp*scaleSource;
+ const filter=ctx.createConvolver();filter.normalize=false;filter.buffer=impulseResponse(ctx,loaded);
+ const fade=ctx.createGain();fade.gain.value=0;
+ const speaker=ctx.createGain();speaker.gain.value=.09;
+ node.connect(sourceGain);sourceGain.connect(filter);filter.connect(fade);fade.connect(speaker);speaker.connect(ctx.destination);
+ return {node,sourceGain,sourceScale:scaleSource,filter,fade,speaker,sourceType:state.source,loaded};
+}
+async function play(loaded){
+ monitorMode=loaded;updateAudioButtons();clearTimeout(audioUpdateTimer);
+ const request=++audioRequest;
+ try{
+  audioCtx??=new(window.AudioContext||window.webkitAudioContext)();await audioCtx.resume();
+  if(request!==audioRequest)return;
+  $('audioStatus').textContent='Building live '+(loaded?'loaded tube':'empty tube')+' filter…';
+  const next=buildAudio(audioCtx,loaded);
+  if(request!==audioRequest){next.filter.disconnect();next.speaker.disconnect();return;}
+  const prev=activeAudio,now=audioCtx.currentTime;
+  next.node.start();next.fade.gain.setValueAtTime(0,now);next.fade.gain.linearRampToValueAtTime(1,now+.10);
+  activeAudio=next;
+  if(prev){prev.fade.gain.cancelScheduledValues(now);prev.fade.gain.setValueAtTime(prev.fade.gain.value,now);prev.fade.gain.linearRampToValueAtTime(0,now+.10);
+   setTimeout(()=>{try{prev.node.stop();prev.node.disconnect();prev.sourceGain.disconnect();prev.filter.disconnect();prev.fade.disconnect();prev.speaker.disconnect();}catch(e){}},180);
+  }
+  $('audioStatus').textContent='LIVE · '+(loaded?'resonator-loaded tube':'empty tube')+' · '+state.source+' · '+number(state.amp,2)+' Pa RMS';
+ }catch(e){$('audioStatus').textContent='Audio unavailable: '+e.message;monitorMode=null;updateAudioButtons();}
+}
+bindControls();refresh();
+</script>
+</body></html>
